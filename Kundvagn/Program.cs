@@ -1,26 +1,33 @@
-﻿using System;
-using System.Collections.Generic;
+﻿
 
-class Program
+// Skapa några varumärken
+Brand apple = new Brand("Juliet");
+Brand orange = new Brand("Cuties");
+
+// Skapa några produkter och tilldela dem varumärken
+Product appleProduct = new Product("Apple", apple, 2.5);
+Product orangeProduct = new Product("Orange", orange, 1.8);
+
+// Skapa en lista med produkter
+List<Product> products = new List<Product> { appleProduct, orangeProduct };
+
+// Skapa en kundvagn
+Cart cart = new Cart();
+
+bool loop = true;
+
+do
 {
-    static void Main()
+    Console.Clear();
+    
+
+    Console.WriteLine("Välj en åtgärd:");
+    Console.WriteLine("1.Lägg till frukt i kundvagnen\n2.Ta bort frukt från kundvagnen\n3.Visa kundvagnen och totalpris\nAvsluta");
+
+    int userInput = int.Parse(Console.ReadLine());
+    switch (userInput)
     {
-        // Skapa några varumärken
-        Brand apple = new Brand("Apple");
-        Brand orange = new Brand("Orange");
-
-        // Skapa några produkter och tilldela dem varumärken
-        Product appleProduct = new Product("Apple", apple, 2.5);
-        Product orangeProduct = new Product("Orange", orange, 1.8);
-
-        // Skapa en lista med produkter
-        List<Product> products = new List<Product> { appleProduct, orangeProduct };
-
-        // Skapa en kundvagn
-        Cart cart = new Cart();
-
-        do
-        {
+        case 1:
             // Visa produktlistan för användaren
             Console.WriteLine("Välj en produkt att lägga till i kundvagnen:");
             for (int i = 0; i < products.Count; i++)
@@ -34,30 +41,41 @@ class Program
 
             // Lägg till produkten i kundvagnen
             cart.AddToCart(products[selectedProductIndex]);
-
+            Console.WriteLine($"{products[selectedProductIndex].Name} har lagt till i kundvagnen\nTryck enter för att fortsätta");
+            Console.ReadKey();
+            break;
+        case 2:
+            // Ta bort en produkt från kundvagnen
+            Console.Write("Ange produktnummer att ta bort: ");
+            int productToRemoveIndex = int.Parse(Console.ReadLine()) - 1;
+            cart.RemoveFromCart(cart.CartItems[productToRemoveIndex].Product);
+            Console.ReadKey();
+            break;
+        case 3:
             // Visa kundvagnen
             Console.WriteLine("Kundvagnen:");
             foreach (CartItem cartItem in cart.CartItems)
             {
-                Console.WriteLine($"{cartItem.Product.Brand.Name} - {cartItem.Product.Name} - {cartItem.Product.Price} kr  - {cartItem.Quantity}");
+                Console.WriteLine($"{cartItem.Product.Brand.Name} - {cartItem.Product.Name} - {cartItem.Quantity}st - {cartItem.Quantity * cartItem.Product.Price} kr");
             }
-
-            
-        } while (true);
-        // Ta bort en produkt från kundvagnen
-        Console.Write("Ange produktnummer att ta bort: ");
-        int productToRemoveIndex = int.Parse(Console.ReadLine()) - 1;
-        cart.RemoveFromCart(cart.CartItems[productToRemoveIndex].Product);
-
-        // Visa uppdaterad kundvagn
-        Console.WriteLine("Uppdaterad kundvagn:");
-        foreach (CartItem cartItem in cart.CartItems)
-        {
-            Console.WriteLine($"{cartItem.Product.Brand.Name} - {cartItem.Product.Name} - {cartItem.Product.Price} kr");
-        }
-
+            // Beräkna och visa totalpriset för alla produkter i kundvagnen
+            double totalCartPrice = cart.CartItems.Sum(item => item.Quantity * item.Product.Price);
+            Console.WriteLine($"Totalt pris för alla produkter i kundvagnen: {totalCartPrice} kr");
+            Console.ReadKey();
+            break;
+        case 4:
+            loop = false;
+            break;
+        default:
+            Console.WriteLine("???");
+            break;
     }
-}
+    
+
+    
+
+} while (loop);
+
 
 // Brand-klassen
 class Brand
@@ -115,6 +133,7 @@ class Cart
         if (existingItem != null)
         {
             existingItem.Quantity++;
+            
         }
         else
         {
